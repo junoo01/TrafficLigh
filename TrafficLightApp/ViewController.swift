@@ -13,52 +13,66 @@ class ViewController: UIViewController {
     @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var btnStartStop: UIButton!
     
-    var timer = Timer()
-    var scoreTimer = Timer()
-    var timerCount = 0
+    var timer: Timer?
+    let timeGreen = 7
+    let timeYellow = 3
+    let timeRed = 5
+    var isRun = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       counterLabel.text = String(timerCount);
-    }
-
-    @IBAction func startStopClicked(_ sender: Any) {
-        if timerCount == 0 {
-            timerCount = 10;
-            trafficLight.image = UIImage(named: "TrafficLight")
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
-            
-            btnStartStop.isEnabled = false;
-            btnStartStop.setTitle("", for: [])
-
-        
-            counterLabel.text = String(timerCount);
-        }
-        else{
-
-            scoreTimer.invalidate();
-        }
-
+        turnOfAll()
+        setUpTimerGreend()
     }
     
-    @objc func updateCounter() {
-        timerCount -= 1
-        if timerCount == 9 {
-            trafficLight.image = UIImage(named: "TrafficLight3")
-
-        }else if timerCount == 6 {
-            trafficLight.image = UIImage(named: "TrafficLight2");
-            btnStartStop.setTitle("Stop", for: [])
-        }else if timerCount == 5 {
-            trafficLight.image = UIImage(named: "TrafficLight1");
-            btnStartStop.isEnabled = true
-            if timerCount == 0 {
-                timer.invalidate()
+    func turnOfAll() {
+        trafficLight.image = UIImage(named: "TrafficLight")
+    }
+    
+    func setUpTimerGreend() {
+        var number = timeGreen
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.turnOfAll()
+            self.trafficLight.image = UIImage(named: "TrafficLight1")
+            number -= 1
+            self.counterLabel.text = String(number);
+            if number <= 0 {
+                self.isRun = false
+                self.timer?.invalidate()
+                self.setUpTimerYellow()
             }
-        }
-        counterLabel.text = String(timerCount);
+        })
     }
     
+    func setUpTimerYellow() {
+        var number = timeYellow
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.turnOfAll()
+            self.trafficLight.image = UIImage(named: "TrafficLight2")
+            number -= 1
+            self.counterLabel.text = String(number);
+            if number <= 0 {
+                self.isRun = false
+                self.timer?.invalidate()
+                self.setUpTimerRed()
+            }
+        })
+    }
+    func setUpTimerRed() {
+        var number = timeYellow
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.turnOfAll()
+            self.trafficLight.image = UIImage(named: "TrafficLight3")
+            number -= 1
+            self.counterLabel.text = String(number);
+            if number <= 0 {
+                self.isRun = false
+                self.timer?.invalidate()
+                self.setUpTimerGreend()()
+            }
+        })
+    }
     
+
 }
 
